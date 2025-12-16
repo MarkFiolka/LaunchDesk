@@ -13,10 +13,12 @@ static QString loadAllStyles()
     const QStringList files = {
         ":/styles/QWidget.qss",
         ":/styles/QFrame.qss",
+        ":/styles/QLineEdit.qss",
+        ":/styles/QListWidget.qss",
         ":/styles/QPushButton.qss",
         ":/styles/QPushButton_back.qss",
-        ":/styles/QPushButton_viewed.qss",
         ":/styles/QPushButton_icons.qss",
+        ":/styles/QPushButton_viewed.qss",
         ":/styles/QCheckBox.qss"
     };
 

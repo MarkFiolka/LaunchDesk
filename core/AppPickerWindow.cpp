@@ -16,13 +16,17 @@ AppPickerWindow::AppPickerWindow(QWidget *parent)
     setWindowTitle("Installed Apps");
     resize(600, 600);
 
+    setObjectName("AppPickerWindow");
+
     QVBoxLayout *layout = new QVBoxLayout(this);
 
     search = new QLineEdit();
+    search->setObjectName("SearchField");
     search->setPlaceholderText("Search...");
     layout->addWidget(search);
 
     list = new QListWidget();
+    list->setObjectName("AppList");
     list->setIconSize(QSize(32, 32));
     layout->addWidget(list);
 
@@ -40,6 +44,7 @@ AppPickerWindow::AppPickerWindow(QWidget *parent)
         accept();
     });
 }
+
 
 void AppPickerWindow::loadApps()
 {

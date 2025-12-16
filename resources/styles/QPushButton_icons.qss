@@ -1,6 +1,7 @@
 QPushButton[type="icons"] {
     background-color: transparent;
-    border: 1px solid #4A4A4A;
+    color: #9FD7ED;
+    border: 1px solid #3A3A3A;
     padding: 6px;
     min-width: 16px;
     min-height: 16px;
@@ -8,9 +9,11 @@ QPushButton[type="icons"] {
 }
 
 QPushButton[type="icons"]:hover {
-    background-color: #2C3235;
+    background-color: #2A2A2A;
+    border-color: #59C4ED;
 }
 
 QPushButton[type="icons"]:pressed {
-    background-color: #3E4A4F;
+    background-color: #1A1A1A;
+    border-color: #2A8DB3;
 }
