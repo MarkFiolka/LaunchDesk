@@ -1,0 +1,17 @@
+QPushButton[viewed="false"] {
+    background-color: #59C4ED;
+    color: #1E1E1E;
+}
+
+QPushButton[viewed="true"] {
+    background-color: #3BAFDA;
+    color: #1E1E1E;
+}
+
+QPushButton[viewed]:hover {
+    background-color: #59C4ED;
+}
+
+QPushButton[viewed]:pressed {
+    background-color: #2A8DB3;
+}

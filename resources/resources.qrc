@@ -1,0 +1,22 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/Add_Button.svg</file>
+        <file>icons/Remove_Button.svg</file>
+        <file>icons/Back_Button.svg</file>
+        <file>icons/Edit_Button.svg</file>
+        <file>icons/Play_Button.svg</file>
+        <file>icons/Dropdown_Down_Button.svg</file>
+        <file>icons/Dropdown_Up_Button.svg</file>
+    </qresource>
+
+    <qresource prefix="/">
+        <file>styles/QWidget.qss</file>
+        <file>styles/QFrame.qss</file>
+        <file>styles/QPushButton.qss</file>
+        <file>styles/QPushButton_back.qss</file>
+        <file>styles/QPushButton_viewed.qss</file>
+        <file>styles/QPushButton_icons.qss</file>
+        <file>styles/QCheckBox.qss</file>
+    </qresource>
+
+</RCC>
