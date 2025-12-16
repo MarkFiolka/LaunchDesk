@@ -1,8 +1,8 @@
 QCheckBox {
     font-size: 14px;
-    color: #C8D0D6;
+    color: #CFEFFF;
 }
 
 QCheckBox:hover {
-    color: #FFFFFF;
+    color: #2A8DB3;
 }
