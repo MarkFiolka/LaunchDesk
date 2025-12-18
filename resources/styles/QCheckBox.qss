@@ -1,8 +1,35 @@
 QCheckBox {
     font-size: 14px;
     color: #CFEFFF;
+    spacing: 6px;
 }
 
 QCheckBox:hover {
     color: #2A8DB3;
+}
+
+QCheckBox::indicator {
+    width: 16px;
+    height: 16px;
+    border: 1px solid #2A8DB3;
+    background-color: #1F2528;
+    border-radius: 3px;
+}
+
+QCheckBox::indicator:hover {
+    border-color: #59C4ED;
+}
+
+QCheckBox::indicator:checked {
+    background-color: #2A8DB3;
+    border-color: #2A8DB3;
+}
+
+QCheckBox::indicator:checked:hover {
+    background-color: #59C4ED;
+}
+
+QCheckBox::indicator:disabled {
+    background-color: #2A2A2A;
+    border-color: #444444;
 }

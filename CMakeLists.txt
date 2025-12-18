@@ -50,10 +50,11 @@ target_include_directories(LaunchDesk PRIVATE
 
 if (WIN32)
     target_sources(LaunchDesk PRIVATE resources/appicon.rc)
+    target_link_libraries(LaunchDesk PRIVATE shell32 ole32 uuid)
 endif()
 
 if (MINGW)
-    target_link_options(LaunchDesk PRIVATE -Wl,--subsystem,console)
+    target_link_options(LaunchDesk PRIVATE -Wl,--subsystem,windows)
 endif()
 
 qt_add_resources(LaunchDeskResources resources/resources.qrc)
@@ -61,34 +62,44 @@ target_sources(LaunchDesk PRIVATE ${LaunchDeskResources})
 
 target_link_libraries(LaunchDesk PRIVATE Qt6::Widgets Qt6::Svg)
 
-if (WIN32)
-    target_link_libraries(LaunchDesk PRIVATE shell32 ole32 uuid)
-endif()
-
 set(QT_BIN_DIR "C:/Qt/6.10.0/mingw_64/bin")
-set(QT_PLUGIN_DIR "C:/Qt/6.10.0/mingw_64/plugins")
 set(MINGW_BIN_DIR "C:/Qt/Tools/mingw1310_64/bin")
 
-add_custom_command(TARGET LaunchDesk POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E echo "Copying Qt DLLs..."
+set(WINDEPLOYQT "${QT_BIN_DIR}/windeployqt.exe")
 
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${QT_BIN_DIR}/Qt6Core.dll"            "$<TARGET_FILE_DIR:LaunchDesk>"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${QT_BIN_DIR}/Qt6Gui.dll"             "$<TARGET_FILE_DIR:LaunchDesk>"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${QT_BIN_DIR}/Qt6Widgets.dll"         "$<TARGET_FILE_DIR:LaunchDesk>"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${QT_BIN_DIR}/Qt6Svg.dll"             "$<TARGET_FILE_DIR:LaunchDesk>"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${QT_BIN_DIR}/Qt6SvgWidgets.dll"      "$<TARGET_FILE_DIR:LaunchDesk>"
+set(DEBUG_DIR "$<TARGET_FILE_DIR:LaunchDesk>")
 
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${MINGW_BIN_DIR}/libstdc++-6.dll"     "$<TARGET_FILE_DIR:LaunchDesk>"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${MINGW_BIN_DIR}/libgcc_s_seh-1.dll"  "$<TARGET_FILE_DIR:LaunchDesk>"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${MINGW_BIN_DIR}/libwinpthread-1.dll" "$<TARGET_FILE_DIR:LaunchDesk>"
+set(RELEASE_DIR "${CMAKE_BINARY_DIR}/release/LaunchDesk")
 
-        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:LaunchDesk>/imageformats"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${QT_PLUGIN_DIR}/imageformats/qsvg.dll"
-        "$<TARGET_FILE_DIR:LaunchDesk>/imageformats"
+add_custom_target(build_application
+        COMMENT "Building portable LaunchDesk application"
 )
 
-add_custom_command(TARGET LaunchDesk POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:LaunchDesk>/platforms"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${QT_PLUGIN_DIR}/platforms/qwindows.dll"
-        "$<TARGET_FILE_DIR:LaunchDesk>/platforms"
+add_custom_command(TARGET build_application
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${RELEASE_DIR}"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:LaunchDesk>"
+        "${RELEASE_DIR}"
 )
+
+add_custom_command(TARGET build_application
+        COMMAND "${WINDEPLOYQT}"
+        --no-translations
+        --no-system-d3d-compiler
+        --no-opengl-sw
+        "${RELEASE_DIR}/LaunchDesk.exe"
+)
+
+add_custom_command(TARGET build_application
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${MINGW_BIN_DIR}/libstdc++-6.dll"
+        "${RELEASE_DIR}"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${MINGW_BIN_DIR}/libgcc_s_seh-1.dll"
+        "${RELEASE_DIR}"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${MINGW_BIN_DIR}/libwinpthread-1.dll"
+        "${RELEASE_DIR}"
+)
+
+add_dependencies(build_application LaunchDesk)
