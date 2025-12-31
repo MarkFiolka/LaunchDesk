@@ -36,8 +36,8 @@ qt_add_executable(LaunchDesk
         core/ConfigManager.h
         core/ResourcePaths.cpp
         core/ResourcePaths.h
-        core/AppPickerWindow.cpp
-        core/AppPickerWindow.h
+        ui/windows/AppPicker.cpp
+        ui/windows/AppPicker.h
 )
 
 target_include_directories(LaunchDesk PRIVATE

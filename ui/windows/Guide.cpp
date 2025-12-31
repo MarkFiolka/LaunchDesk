@@ -13,32 +13,32 @@
 
 Guide::Guide(Welcome *previousWindow, QWidget *parent)
         : QMainWindow(parent),
-          previousWindowPtr(previousWindow),
-          cfg(ResourcePaths::CONFIG)
+          m_previousWindow(previousWindow),
+          m_configManager(ResourcePaths::CONFIG)
 {
-    cfg.load();
+    m_configManager.load();
 
-    createBasicWindow();
-    createAndAdjustContent();
+    this->createBasicWindow();
+    this->createAndAdjustContent();
 }
 
 void Guide::createBasicWindow()
 {
-    scrollArea = new QScrollArea(this);
-    scrollArea->setWidgetResizable(true);
+    m_scrollArea = new QScrollArea(this);
+    m_scrollArea->setWidgetResizable(true);
 
-    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
-    setCentralWidget(scrollArea);
+    this->setCentralWidget(m_scrollArea);
 
-    scrollContent = new QWidget(scrollArea);
-    scrollArea->setWidget(scrollContent);
+    m_scrollContent = new QWidget(m_scrollArea);
+    m_scrollArea->setWidget(m_scrollContent);
 
-    mainLayout = new QVBoxLayout(scrollContent);
-    gridLayout = new QGridLayout();
+    m_mainLayout = new QVBoxLayout(m_scrollContent);
+    m_gridLayout = new QGridLayout();
 
-    mainLayout->addSpacing(5);
+    m_mainLayout->addSpacing(5);
 }
 
 void Guide::createAndAdjustContent()
@@ -48,15 +48,15 @@ void Guide::createAndAdjustContent()
     goBack->setFixedSize(60, 25);
     goBack->setAttribute(Qt::WA_StyledBackground, true);
 
-    mainLayout->addWidget(goBack, 0, Qt::AlignLeft);
+    m_mainLayout->addWidget(goBack, 0, Qt::AlignLeft);
 
     connect(goBack, &QPushButton::clicked, [this] {
-        if (previousWindowPtr)
-            previousWindowPtr->show();
+        if (m_previousWindow)
+            m_previousWindow->show();
         this->close();
     });
 
-    QList<QString> titles = {
+    QList<QString> titles = { //add titles in the future
             "Sample 1",
             "Sample 2",
             "Sample 3",
@@ -66,7 +66,7 @@ void Guide::createAndAdjustContent()
     };
 
     QList<QString> urls = {
-            "https://youtube.com/...",
+            "https://youtube.com/...", //add links in the future
             "https://youtube.com/...",
             "https://youtube.com/...",
             "https://youtube.com/...",
@@ -83,16 +83,16 @@ void Guide::createAndAdjustContent()
 
         btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
-        bool viewed = cfg.getGuideViewed(i + 1);
+        bool viewed = m_configManager.getGuideViewed(i + 1);
         btn->setProperty("viewed", viewed);
         btn->setAttribute(Qt::WA_StyledBackground, true);
 
-        gridLayout->addWidget(btn, row, 0, Qt::AlignLeft);
+        m_gridLayout->addWidget(btn, row, 0, Qt::AlignLeft);
         row++;
 
         connect(btn, &QPushButton::clicked, [this, btn, i, urls] {
-            cfg.setGuideViewed(i + 1, true);
-            cfg.save();
+            m_configManager.setGuideViewed(i + 1, true);
+            m_configManager.save();
 
             btn->setProperty("viewed", true);
 
@@ -103,8 +103,8 @@ void Guide::createAndAdjustContent()
         });
     }
 
-    mainLayout->addLayout(gridLayout);
-    mainLayout->addStretch();
+    m_mainLayout->addLayout(m_gridLayout);
+    m_mainLayout->addStretch();
 
-    adjustSize();
+    this->adjustSize();
 }

@@ -19,12 +19,12 @@ private:
     void createBasicWindow();
     void createAndAdjustContent();
 
-    QScrollArea* scrollArea;
-    QWidget* scrollContent;
+    QScrollArea* m_scrollArea;
+    QWidget* m_scrollContent;
 
-    QVBoxLayout* mainLayout;
-    QGridLayout* gridLayout;
+    QVBoxLayout* m_mainLayout;
+    QGridLayout* m_gridLayout;
 
-    Welcome* previousWindowPtr;
-    ConfigManager cfg;
+    Welcome* m_previousWindow;
+    ConfigManager m_configManager;
 };

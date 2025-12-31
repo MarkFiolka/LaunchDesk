@@ -9,7 +9,7 @@
 #include <QFileInfo>
 #include <QFormLayout>
 
-#include "AppPickerWindow.h"
+#include "../ui/windows/AppPicker.h"
 #include "ContentStorage.h"
 #include "CommandTemplate.h"
 
@@ -220,7 +220,7 @@ void ContentRow::buildUi() {
 
 
     connect(m_cmdBrowseApps, &QPushButton::clicked, this, [this]() {
-        AppPickerWindow win(window());
+        AppPicker win(window());
         win.setWindowModality(Qt::ApplicationModal);
         if (win.exec() == QDialog::Accepted) {
             QString cmd = win.selectedCommand();

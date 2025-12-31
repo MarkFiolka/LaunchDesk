@@ -3,17 +3,19 @@
 #include <QDialog>
 #include <QLineEdit>
 #include <QListWidget>
+#include <QStandardItemModel>
 
 struct AppInfo {
     QString name;
     QString cmd;
+    QIcon icon;
 };
 
-class AppPickerWindow : public QDialog {
+class AppPicker : public QDialog {
     Q_OBJECT
 
 public:
-    explicit AppPickerWindow(QWidget *parent = nullptr);
+    explicit AppPicker(QWidget *parent = nullptr);
 
     QString selectedCommand() const {
         return m_selectedCommand;
@@ -24,8 +26,8 @@ signals:
 
 private:
     QLineEdit *m_searchBar;
-    QListWidget *m_applicationList;
-
+    QListView *m_applicationView;
+    QStandardItemModel *m_model;
     QList<AppInfo> m_apps;
     QString m_selectedCommand;
 
