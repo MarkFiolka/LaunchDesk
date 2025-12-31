@@ -9,24 +9,25 @@ struct AppInfo {
     QString cmd;
 };
 
-class AppPickerWindow : public QDialog
-{
+class AppPickerWindow : public QDialog {
     Q_OBJECT
 
 public:
     explicit AppPickerWindow(QWidget *parent = nullptr);
 
-    QString selectedCommand() const { return m_selectedCommand; }
+    QString selectedCommand() const {
+        return m_selectedCommand;
+    }
 
-    signals:
-        void appSelected(const QString &cmd);
+signals:
+    void appSelected(const QString &cmd);
 
 private:
-    QLineEdit     *search;
-    QListWidget   *list;
+    QLineEdit *m_searchBar;
+    QListWidget *m_applicationList;
 
-    QList<AppInfo> apps;
-    QString        m_selectedCommand;
+    QList<AppInfo> m_apps;
+    QString m_selectedCommand;
 
     void loadApps();
     void refreshList(const QString &filter);

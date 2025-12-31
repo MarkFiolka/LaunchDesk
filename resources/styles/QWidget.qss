@@ -1,5 +1,3 @@
 QWidget {
-    background-color: #1C1C1C;
-    color: #E6EEF2;
-    font-size: 14px;
+    background-color: #1C1C1C; /* This is the color used in the background of the Widget */ /* Color History. 281225 #1C1C1C */
 }
