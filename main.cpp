@@ -16,7 +16,7 @@ static void setupConsole() {
 }
 #endif
 
-static bool appendQss(QApplication &app, const QString &path) {
+static bool applyQss(QApplication &app, const QString &path) {
     QFile file(path);
 
     if (!file.exists()) {
@@ -43,10 +43,10 @@ int main(int argc, char *argv[]) {
 
     QApplication app(argc, argv);
 
-    appendQss(app, ":/styles/QWidget.qss");
+    applyQss(app, ":/styles/QWidget.qss");
+    app.setQuitOnLastWindowClosed(false);
 
     LaunchDesk window;
-    window.show();
 
     return app.exec();
 }

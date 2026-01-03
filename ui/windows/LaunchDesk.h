@@ -2,28 +2,39 @@
 
 #include <QMainWindow>
 
-class QSplitter;
-class QWidget;
+class QSystemTrayIcon;
+class QMenu;
+class QAction;
 
 class LaunchDesk : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit LaunchDesk(QWidget* parent = nullptr);
+    explicit LaunchDesk(QWidget *parent = nullptr);
+    ~LaunchDesk() override;
+
+public slots:
+    void toggleDock();
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
+    bool nativeEvent(const QByteArray &eventType, void *message, qintptr *result) override;
 
 private:
-    void createMenuBar();
-    QMenuBar* m_menuBar;
-    QMenu* m_fileMenu;
-    QAction* m_newProfile;
-    QAction* m_newAction;
-    QAction* m_reloadLaunchDesk;
-    QAction* m_save;
-    QAction* m_exit;
+    void setupUi();
+    void setupDockFlags();
+    void setupTray();
+    void registerHotkey();
+    void unregisterHotkey();
+    void moveToBottomRight(int margin = 12);
 
-    void createCentralLayout();
-    QSplitter* m_splitter;
-    QWidget* m_leftPanel;
-    QWidget* m_rightPanel;
+private:
+    QSystemTrayIcon* m_tray = nullptr;
+    QMenu* m_menu = nullptr;
+    QAction* m_toggle = nullptr;
+    QAction* m_quit = nullptr;
+
+    bool m_allowClose = false;
+    static constexpr int HOTKEY_ID = 0x4C44;
 };

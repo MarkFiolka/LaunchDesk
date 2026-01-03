@@ -20,7 +20,6 @@ qt_add_executable(LaunchDesk
         resources/resources.qrc
 )
 
-
 target_include_directories(LaunchDesk PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/ui
