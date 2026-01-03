@@ -1,71 +1,49 @@
 #include <QApplication>
-#include <QCoreApplication>
-#include <QDir>
 #include <QFile>
 #include <QDebug>
 
-#include "ui/windows/Welcome.h"
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include "ui/windows/LaunchDesk.h"
-#include "core/ConfigManager.h"
 
-static QString loadAllStyles()
-{
-    const QStringList files = {
-        ":/styles/QWidget.qss",
-        ":/styles/QFrame.qss",
-        ":/styles/QLineEdit.qss",
-        ":/styles/QListWidget.qss",
-        ":/styles/QPushButton.qss",
-        ":/styles/QPushButton_back.qss",
-        ":/styles/QPushButton_icons.qss",
-        ":/styles/QPushButton_viewed.qss",
-        ":/styles/QCheckBox.qss"
-    };
+#ifdef _WIN32
+static void setupConsole() {
+    AllocConsole();
+    freopen("CONOUT$", "w", stdout);
+    freopen("CONOUT$", "w", stderr);
+}
+#endif
 
-    QString finalStyle;
-    qDebug() << "Loading stylesheets:";
+static bool appendQss(QApplication &app, const QString &path) {
+    QFile file(path);
 
-    for (const QString& path : files)
-    {
-        QFile f(path);
-
-        if (!f.exists()) {
-            qDebug() << "  MISSING:" << path;
-            continue;
-        }
-
-        if (!f.open(QFile::ReadOnly)) {
-            qDebug() << "  FAILED TO OPEN:" << path;
-            continue;
-        }
-
-        finalStyle += QString::fromUtf8(f.readAll()) + "\n\n";
-        qDebug() << "  loaded:" << path;
+    if (!file.exists()) {
+        qDebug() << "QSS missing:" << path;
+        return false;
     }
 
-    return finalStyle;
+    if (!file.open(QFile::ReadOnly | QFile::Text)) {
+        qDebug() << "QSS open failed:" << path << "-" << file.errorString();
+        return false;
+    }
+
+    const QString qss = QString::fromUtf8(file.readAll());
+    app.setStyleSheet(app.styleSheet() + "\n\n" + qss);
+
+    qDebug() << "QSS applied:" << path << "(" << qss.size() << "chars)";
+    return true;
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
+#ifdef _WIN32
+    setupConsole();
+#endif
+
     QApplication app(argc, argv);
 
-    QDir::setCurrent(QCoreApplication::applicationDirPath());
-
-    QString style = loadAllStyles();
-    app.setStyleSheet(style);
-    qDebug() << "Final stylesheet size:" << style.size();
-
-    ConfigManager cfg;
-    cfg.load();
-
-    bool showWelcome = cfg.isFirstStart() || cfg.getBool("showWelcome", true);
-
-    if (showWelcome) {
-        Welcome w;
-        w.show();
-        return app.exec();
-    }
+    appendQss(app, ":/styles/QWidget.qss");
 
     LaunchDesk window;
     window.show();

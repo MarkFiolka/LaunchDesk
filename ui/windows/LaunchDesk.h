@@ -1,73 +1,29 @@
 #pragma once
 
 #include <QMainWindow>
-#include <QHash>
-#include <QVector>
-#include <QProcess>
 
-struct ContentConfig;
-class QFrame;
-class QPushButton;
 class QSplitter;
-class QVBoxLayout;
-class QProcess;
+class QWidget;
 
 class LaunchDesk : public QMainWindow
 {
     Q_OBJECT
+
 public:
     explicit LaunchDesk(QWidget* parent = nullptr);
-    ~LaunchDesk() override;
-
-private slots:
-    void onAddProfile();
-    void onRemoveProfile();
-
-    void onAddContentToProfile();
-    void onPlayAllPressed();
-
-    void onTrackedProcessFinished(int, QProcess::ExitStatus);
 
 private:
-    QFrame*       leftPanel    = nullptr;
-    QFrame*       rightPanel   = nullptr;
-    QSplitter*    splitter     = nullptr;
+    void createMenuBar();
+    QMenuBar* m_menuBar;
+    QMenu* m_fileMenu;
+    QAction* m_newProfile;
+    QAction* m_newAction;
+    QAction* m_reloadLaunchDesk;
+    QAction* m_save;
+    QAction* m_exit;
 
-    QPushButton*  addProfileBtn    = nullptr;
-    QPushButton*  removeProfileBtn = nullptr;
-
-    QPushButton*  playAllBtn    = nullptr;
-    QPushButton*  addContentBtn = nullptr;
-
-    QVBoxLayout*  profilesLayout = nullptr;
-    QVBoxLayout*  contentLayout  = nullptr;
-
-    QString       selectedProfile;
-    QString       lastProfile;
-
-    QHash<QProcess*, QString> m_processToFolder;
-
-private:
-    QFrame*    createLeftPanel();
-    QFrame*    createRightPanel();
-    QSplitter* createSplitter(QFrame* left, QFrame* right);
-
-    void saveWindowSettings();
-    void restoreWindowSettings();
-
-    void loadProfiles();
-    void loadProfileContent(const QString& profileName);
-    void addProfileItem(const QString& name);
-
-    void addContentItem(const QString& folderName,
-                        const QString& folderPath);
-
-
-    void launchContentProcess(const QString& folderPath,
-                          const ContentConfig& cfg,
-                          bool interactive);
-
-    static bool isExePath(const QString& command);
-    static bool isUwpCommand(const QString& command);
-    static bool isUrlCommand(const QString& command);
+    void createCentralLayout();
+    QSplitter* m_splitter;
+    QWidget* m_leftPanel;
+    QWidget* m_rightPanel;
 };

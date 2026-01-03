@@ -4,49 +4,39 @@ project(LaunchDesk LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
 set(CMAKE_PREFIX_PATH "C:/Qt/6.10.0/mingw_64/lib/cmake")
 
-find_package(Qt6 COMPONENTS Widgets Svg REQUIRED)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Svg)
 qt_standard_project_setup()
 
 qt_add_executable(LaunchDesk
         main.cpp
-
-        ui/windows/Guide.cpp
-        ui/windows/Guide.h
         ui/windows/LaunchDesk.cpp
         ui/windows/LaunchDesk.h
-        ui/windows/Welcome.cpp
-        ui/windows/Welcome.h
-
-        ui/helpers/UIHelpers.cpp
-        ui/helpers/UIHelpers.h
-
-        core/ContentConfig.h
-        core/ContentStorage.cpp
-        core/ContentStorage.h
-        core/CommandTemplate.cpp
-        core/CommandTemplate.h
-        core/WindowPlacement.cpp
-        core/WindowPlacement.h
-        core/ContentRow.cpp
-        core/ContentRow.h
-
-        core/ConfigManager.cpp
-        core/ConfigManager.h
-        core/ResourcePaths.cpp
-        core/ResourcePaths.h
-        ui/windows/AppPicker.cpp
-        ui/windows/AppPicker.h
+        resources/resources.qrc
 )
+
 
 target_include_directories(LaunchDesk PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/core
         ${CMAKE_CURRENT_SOURCE_DIR}/ui
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/windows
         ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpers
+        ${CMAKE_CURRENT_SOURCE_DIR}/core
 )
+
+target_link_libraries(LaunchDesk PRIVATE
+        Qt6::Widgets
+        Qt6::Svg
+)
+
+# --------------------------------------------------
+# Windows specifics
+# --------------------------------------------------
 
 if (WIN32)
     target_sources(LaunchDesk PRIVATE resources/appicon.rc)
@@ -57,47 +47,34 @@ if (MINGW)
     target_link_options(LaunchDesk PRIVATE -Wl,--subsystem,windows)
 endif()
 
-qt_add_resources(LaunchDeskResources resources/resources.qrc)
-target_sources(LaunchDesk PRIVATE ${LaunchDeskResources})
+# --------------------------------------------------
+# Portable release build (windeployqt)
+# --------------------------------------------------
 
-target_link_libraries(LaunchDesk PRIVATE Qt6::Widgets Qt6::Svg)
-
-set(QT_BIN_DIR "C:/Qt/6.10.0/mingw_64/bin")
-set(MINGW_BIN_DIR "C:/Qt/Tools/mingw1310_64/bin")
-
-set(WINDEPLOYQT "${QT_BIN_DIR}/windeployqt.exe")
-
-set(DEBUG_DIR "$<TARGET_FILE_DIR:LaunchDesk>")
-
-set(RELEASE_DIR "${CMAKE_BINARY_DIR}/release/LaunchDesk")
+set(QT_BIN_DIR     "C:/Qt/6.10.0/mingw_64/bin")
+set(MINGW_BIN_DIR  "C:/Qt/Tools/mingw1310_64/bin")
+set(WINDEPLOYQT    "${QT_BIN_DIR}/windeployqt.exe")
+set(RELEASE_DIR    "${CMAKE_BINARY_DIR}/release/LaunchDesk")
 
 add_custom_target(build_application
         COMMENT "Building portable LaunchDesk application"
 )
 
-add_custom_command(TARGET build_application
+add_custom_command(TARGET build_application POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory "${RELEASE_DIR}"
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "$<TARGET_FILE:LaunchDesk>"
         "${RELEASE_DIR}"
-)
 
-add_custom_command(TARGET build_application
         COMMAND "${WINDEPLOYQT}"
         --no-translations
         --no-system-d3d-compiler
         --no-opengl-sw
         "${RELEASE_DIR}/LaunchDesk.exe"
-)
 
-add_custom_command(TARGET build_application
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${MINGW_BIN_DIR}/libstdc++-6.dll"
-        "${RELEASE_DIR}"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${MINGW_BIN_DIR}/libgcc_s_seh-1.dll"
-        "${RELEASE_DIR}"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${MINGW_BIN_DIR}/libwinpthread-1.dll"
         "${RELEASE_DIR}"
 )
