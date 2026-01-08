@@ -1,0 +1,61 @@
+#pragma once
+#include <QMainWindow>
+
+class QMenuBar;
+class QMenu;
+class QAction;
+class QSystemTrayIcon;
+class QPlainTextEdit;
+
+class LaunchDeskWindow : public QMainWindow {
+    Q_OBJECT
+
+public:
+    explicit LaunchDeskWindow(QWidget *parent = nullptr);
+    QDockWidget* consoleDock() const { return m_consoleDock; }
+
+signals:
+    void newProfileRequested();
+
+    void newActionRequested();
+
+    void reloadRequested();
+
+    void saveRequested();
+
+    void hideRequested();
+
+    void showRequested();
+
+    void exitRequested();
+
+    void toggleConsoleRequested();
+
+private:
+    void createMenuBar();
+    QMenuBar *m_menuBar = nullptr;
+
+    void createFile();
+    QMenu *m_menuFile = nullptr;
+    QAction *m_newProfile = nullptr;
+    QAction *m_newAction = nullptr;
+    QAction *m_reload = nullptr;
+    QAction *m_save = nullptr;
+    QAction *m_menuHide = nullptr;
+    QAction *m_menuExit = nullptr;
+
+    void createView();
+    QMenu *m_menuView = nullptr;
+    QAction *m_console = nullptr;
+
+    void createConsole();
+    QPlainTextEdit *m_logView = nullptr;
+    QDockWidget *m_consoleDock = nullptr;
+
+    void createTray();
+    void updateTrayText();
+    QSystemTrayIcon *m_tray = nullptr;
+    QMenu *m_menuTray = nullptr;
+    QAction *m_toggleTray = nullptr;
+    QAction *m_trayExit = nullptr;
+};

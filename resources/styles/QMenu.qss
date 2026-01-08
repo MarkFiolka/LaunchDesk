@@ -1,0 +1,21 @@
+QMenu {
+    font-size: 12px;
+    padding: 2px;
+    background: #3C3C3C;
+}
+
+QMenu::item {
+    padding: 2px 2px;
+    background: #3C3C3C;
+}
+
+QMenu::item:selected {
+    padding: 2px 2px;
+    background: #4C4C4C;
+}
+
+QMenu::separator {
+    height: 1px;
+    background: #2C2C2C;
+    margin: 6px 8px;
+}

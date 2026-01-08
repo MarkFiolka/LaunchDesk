@@ -15,16 +15,22 @@ qt_standard_project_setup()
 
 qt_add_executable(LaunchDesk
         main.cpp
-        ui/windows/LaunchDesk.cpp
-        ui/windows/LaunchDesk.h
         resources/resources.qrc
+        application/ui/LaunchDeskWindow.cpp
+        application/ui/LaunchDeskWindow.h
+        application/controllers/DockController.cpp
+        application/controllers/DockController.h
+        application/platform/WinHotkeyFilter.cpp
+        application/platform/WinHotkeyFilter.h
+        application/controllers/WinConsole.cpp
+        application/controllers/WinConsole.h
 )
 
 target_include_directories(LaunchDesk PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/ui
-        ${CMAKE_CURRENT_SOURCE_DIR}/ui/windows
-        ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpers
+        application/ui
+        application/ui/windows
+        application/ui/helpers
         ${CMAKE_CURRENT_SOURCE_DIR}/core
 )
 

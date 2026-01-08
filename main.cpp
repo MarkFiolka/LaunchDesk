@@ -2,51 +2,53 @@
 #include <QFile>
 #include <QDebug>
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
+#include "application/ui/LaunchDeskWindow.h"
+#include "application/controllers/DockController.h"
+#include "application/platform/WinHotkeyFilter.h"
+#include "application/controllers/WinConsole.h"
 
-#include "ui/windows/LaunchDesk.h"
-
-#ifdef _WIN32
-static void setupConsole() {
-    AllocConsole();
-    freopen("CONOUT$", "w", stdout);
-    freopen("CONOUT$", "w", stderr);
-}
-#endif
-
-static bool applyQss(QApplication &app, const QString &path) {
-    QFile file(path);
-
-    if (!file.exists()) {
-        qDebug() << "QSS missing:" << path;
-        return false;
+static void applyQss(QApplication &app, const QString &path) {
+    QFile f(path);
+    if (!f.open(QFile::ReadOnly | QFile::Text)) {
+        qDebug() << "QSS open failed:" << path << "-" << f.errorString();
+        return;
     }
-
-    if (!file.open(QFile::ReadOnly | QFile::Text)) {
-        qDebug() << "QSS open failed:" << path << "-" << file.errorString();
-        return false;
-    }
-
-    const QString qss = QString::fromUtf8(file.readAll());
-    app.setStyleSheet(app.styleSheet() + "\n\n" + qss);
-
-    qDebug() << "QSS applied:" << path << "(" << qss.size() << "chars)";
-    return true;
+    app.setStyleSheet(app.styleSheet() + "\n\n" + QString::fromUtf8(f.readAll()));
 }
 
 int main(int argc, char *argv[]) {
-#ifdef _WIN32
-    setupConsole();
-#endif
-
     QApplication app(argc, argv);
-
-    applyQss(app, ":/styles/QWidget.qss");
     app.setQuitOnLastWindowClosed(false);
 
-    LaunchDesk window;
+#ifdef _WIN32
+    const bool enableConsole = true; // easy console toggle
+    if (enableConsole) {
+        WinConsole::attach();
+        qDebug() << "Console attached";
+    }
+#endif
 
-    return app.exec();
+    applyQss(app, ":/styles/QWidget.qss");
+    applyQss(app, ":/styles/QMenu.qss");
+    applyQss(app, ":/styles/QMenuBar.qss");
+
+    LaunchDeskWindow window;
+    DockController dock(&window, window.consoleDock());
+
+    WinHotkeyFilter hotkey;
+    app.installNativeEventFilter(&hotkey);
+    hotkey.registerHotkey();
+
+    QObject::connect(&hotkey, &WinHotkeyFilter::activated, &dock, &DockController::toggleDock);
+
+    QObject::connect(&window, &LaunchDeskWindow::hideRequested, &dock, &DockController::hideDock);
+    QObject::connect(&window, &LaunchDeskWindow::showRequested, &dock, &DockController::showDock);
+    QObject::connect(&window, &LaunchDeskWindow::toggleConsoleRequested, &dock, &DockController::toggleConsole);
+    QObject::connect(&window, &LaunchDeskWindow::exitRequested, &dock, &DockController::requestQuit);
+
+    window.hide();
+    const int rc = app.exec();
+
+    hotkey.unregisterHotkey();
+    return rc;
 }

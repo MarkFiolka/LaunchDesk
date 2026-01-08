@@ -1,15 +1,10 @@
 <RCC>
     <qresource prefix="/">
         <!-- Icons -->
-        <file>icons/Add_Button.svg</file>
-        <file>icons/Back_Button.svg</file>
-        <file>icons/Dropdown_Down_Button.svg</file>
-        <file>icons/Dropdown_Up_Button.svg</file>
-        <file>icons/Edit_Button.svg</file>
-        <file>icons/Play_Button.svg</file>
-        <file>icons/Remove_Button.svg</file>
 
         <!-- Styles -->
+        <file>styles/QMenu.qss</file>
+        <file>styles/QMenuBar.qss</file>
         <file>styles/QWidget.qss</file>
     </qresource>
 </RCC>
