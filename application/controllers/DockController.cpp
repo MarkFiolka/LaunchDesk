@@ -6,18 +6,16 @@
 #include <QGuiApplication>
 #include <QScreen>
 #include <QCoreApplication>
-#include <QDockWidget>
+#include <QWidget>
 
-DockController::DockController(QWidget *window,
-                               QWidget *consoleOverlay,
-                               QObject *parent)
+#include "debug.h"
+
+DockController::DockController(QWidget *window, QObject *parent)
     : QObject(parent)
-      , m_window(window)
-      , m_consoleOverlay(consoleOverlay) {
+      , m_window(window) {
     m_window->installEventFilter(this);
     setupDockFlags();
 }
-
 
 void DockController::setupDockFlags() {
     m_window->setWindowFlags(
@@ -30,32 +28,12 @@ void DockController::setupDockFlags() {
 void DockController::toggleDock() {
     if (m_window->isVisible()) {
         hideDock();
-        return;
+        dlog("Dock shown");
+    } else {
+        showDock();
+        dlog("Dock shown");
     }
 
-    showDock();
-}
-
-void DockController::toggleConsole()
-{
-    if (!m_consoleOverlay || !m_window)
-        return;
-
-    if (m_consoleOverlay->isVisible()) {
-        m_consoleOverlay->hide();
-        return;
-    }
-
-    const int h = m_consoleOverlay->height();
-    m_consoleOverlay->setGeometry(
-        0,
-        m_window->height() - h,
-        m_window->width(),
-        h
-    );
-
-    m_consoleOverlay->raise();
-    m_consoleOverlay->show();
 }
 
 void DockController::showDock() {
@@ -64,9 +42,8 @@ void DockController::showDock() {
 
     m_window->show();
 
-    QTimer::singleShot(0, m_window, [this] {
-        m_window->adjustSize();
 
+    QTimer::singleShot(0, m_window, [this] {
         if (!m_dockPosSet)
             moveToBottomRight();
 
@@ -93,7 +70,6 @@ void DockController::moveToBottomRight(int margin) {
         return;
 
     const QRect avail = screen->availableGeometry();
-
     m_window->move(
         avail.right() - m_window->width() - margin,
         avail.bottom() - m_window->height() - margin
@@ -105,13 +81,11 @@ void DockController::moveToBottomRight(int margin) {
 bool DockController::eventFilter(QObject *obj, QEvent *ev) {
     if (obj == m_window && ev->type() == QEvent::Close) {
         auto *ce = static_cast<QCloseEvent *>(ev);
-
         if (!m_allowClose) {
             ce->ignore();
             m_window->hide();
             return true;
         }
     }
-
     return QObject::eventFilter(obj, ev);
 }

@@ -10,7 +10,7 @@
 #include <QDockWidget>
 #include <QVBoxLayout>
 
-#include "application/controllers/DockController.h"
+#include "application/controllers/debug.h"
 
 LaunchDeskWindow::LaunchDeskWindow(QWidget *parent)
     : QMainWindow(parent) {
@@ -84,7 +84,7 @@ void LaunchDeskWindow::createFile() {
     connect(m_reload, &QAction::triggered, this, &LaunchDeskWindow::reloadRequested);
     connect(m_save, &QAction::triggered, this, &LaunchDeskWindow::saveRequested);
     connect(m_menuHide, &QAction::triggered, this, &LaunchDeskWindow::hideRequested);
-    connect(m_menuExit, &QAction::triggered, this, &LaunchDeskWindow::exitRequested);
+    connect(m_menuExit, &QAction::triggered, this, &LaunchDeskWindow::exitRequested); //implemented
 }
 
 void LaunchDeskWindow::createView()

@@ -5,23 +5,25 @@
 #include "application/ui/LaunchDeskWindow.h"
 #include "application/controllers/DockController.h"
 #include "application/platform/WinHotkeyFilter.h"
-#include "application/controllers/WinConsole.h"
+#include "application/controllers/WindowsConsole.h"
+#include "application/controllers/DebugAppConsole.h"
 
 static void applyQss(QApplication &app, const QString &path) {
     QFile f(path);
     if (!f.open(QFile::ReadOnly | QFile::Text)) {
-        qDebug() << "QSS open failed:" << path << "-" << f.errorString();
+        qWarning() << "QSS open failed:" << path << f.errorString();
         return;
     }
-    app.setStyleSheet(app.styleSheet() + "\n\n" + QString::fromUtf8(f.readAll()));
+    app.setStyleSheet(app.styleSheet() + QString::fromUtf8(f.readAll()));
 }
+
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     app.setQuitOnLastWindowClosed(false);
 
 #ifdef _WIN32
-    const bool enableConsole = true; // easy console toggle
+    const bool enableConsole = false; // easy console toggle
     if (enableConsole) {
         WinConsole::attach();
         qDebug() << "Console attached";
@@ -33,8 +35,9 @@ int main(int argc, char *argv[]) {
     applyQss(app, ":/styles/QMenuBar.qss");
 
     LaunchDeskWindow window;
-    DockController dock(&window, window.consoleOverlay());
-
+    DockController dock(&window);
+    DebugAppConsole debug(window.consoleOverlay(), window.logView());
+    DebugAppConsole::setInstance(&debug);
     WinHotkeyFilter hotkey;
     app.installNativeEventFilter(&hotkey);
     hotkey.registerHotkey();
@@ -43,7 +46,7 @@ int main(int argc, char *argv[]) {
 
     QObject::connect(&window, &LaunchDeskWindow::hideRequested, &dock, &DockController::hideDock);
     QObject::connect(&window, &LaunchDeskWindow::showRequested, &dock, &DockController::showDock);
-    QObject::connect(&window, &LaunchDeskWindow::toggleConsoleRequested, &dock, &DockController::toggleConsole);
+    QObject::connect(&window, &LaunchDeskWindow::toggleConsoleRequested, &debug, &DebugAppConsole::toggle);
     QObject::connect(&window, &LaunchDeskWindow::exitRequested, &dock, &DockController::requestQuit);
 
     window.hide();

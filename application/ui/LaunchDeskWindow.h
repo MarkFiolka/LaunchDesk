@@ -1,6 +1,8 @@
 #pragma once
 #include <QMainWindow>
 
+#include "application/controllers/DebugAppConsole.h"
+
 class QMenuBar;
 class QMenu;
 class QAction;
@@ -14,6 +16,7 @@ public:
     explicit LaunchDeskWindow(QWidget *parent = nullptr);
 
     QWidget* consoleOverlay() const { return m_consoleOverlay; }
+    QPlainTextEdit* logView() const { return m_logView; }
 
 signals:
     void newProfileRequested();

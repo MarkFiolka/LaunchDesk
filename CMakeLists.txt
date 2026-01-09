@@ -22,8 +22,12 @@ qt_add_executable(LaunchDesk
         application/controllers/DockController.h
         application/platform/WinHotkeyFilter.cpp
         application/platform/WinHotkeyFilter.h
-        application/controllers/WinConsole.cpp
-        application/controllers/WinConsole.h
+        application/controllers/WindowsConsole.cpp
+        application/controllers/WindowsConsole.h
+        application/controllers/DebugAppConsole.cpp
+        application/controllers/DebugAppConsole.h
+        application/controllers/debug.cpp
+        application/controllers/debug.h
 )
 
 target_include_directories(LaunchDesk PRIVATE
