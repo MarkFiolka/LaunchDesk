@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
     applyQss(app, ":/styles/QMenuBar.qss");
 
     LaunchDeskWindow window;
-    DockController dock(&window, window.consoleDock());
+    DockController dock(&window, window.consoleOverlay());
 
     WinHotkeyFilter hotkey;
     app.installNativeEventFilter(&hotkey);

@@ -9,7 +9,7 @@ class DockController : public QObject {
 
 public:
     explicit DockController(QWidget *window,
-                            QDockWidget *consoleDock,
+                            QWidget *consoleOverlay,
                             QObject *parent = nullptr);
 
 public slots:
@@ -28,11 +28,12 @@ protected:
 
 private:
     void setupDockFlags();
+
     void moveToBottomRight(int margin = 12);
 
 private:
     QWidget *m_window = nullptr;
-    QDockWidget *m_consoleDock = nullptr;
+    QWidget *m_consoleOverlay = nullptr;
     bool m_allowClose = false;
     bool m_dockPosSet = false;
 };

@@ -1,6 +1,5 @@
 #include "DockController.h"
 
-#include <QWidget>
 #include <QCloseEvent>
 #include <QTimer>
 #include <QCursor>
@@ -9,20 +8,18 @@
 #include <QCoreApplication>
 #include <QDockWidget>
 
-DockController::DockController(QWidget* window,
-                               QDockWidget* consoleDock,
-                               QObject* parent)
+DockController::DockController(QWidget *window,
+                               QWidget *consoleOverlay,
+                               QObject *parent)
     : QObject(parent)
-    , m_window(window)
-    , m_consoleDock(consoleDock)
-{
+      , m_window(window)
+      , m_consoleOverlay(consoleOverlay) {
     m_window->installEventFilter(this);
     setupDockFlags();
 }
 
 
-void DockController::setupDockFlags()
-{
+void DockController::setupDockFlags() {
     m_window->setWindowFlags(
         Qt::Tool |
         Qt::FramelessWindowHint |
@@ -30,8 +27,7 @@ void DockController::setupDockFlags()
     );
 }
 
-void DockController::toggleDock()
-{
+void DockController::toggleDock() {
     if (m_window->isVisible()) {
         hideDock();
         return;
@@ -42,14 +38,27 @@ void DockController::toggleDock()
 
 void DockController::toggleConsole()
 {
-    if (!m_consoleDock)
+    if (!m_consoleOverlay || !m_window)
         return;
 
-    m_consoleDock->setVisible(!m_consoleDock->isVisible());
+    if (m_consoleOverlay->isVisible()) {
+        m_consoleOverlay->hide();
+        return;
+    }
+
+    const int h = m_consoleOverlay->height();
+    m_consoleOverlay->setGeometry(
+        0,
+        m_window->height() - h,
+        m_window->width(),
+        h
+    );
+
+    m_consoleOverlay->raise();
+    m_consoleOverlay->show();
 }
 
-void DockController::showDock()
-{
+void DockController::showDock() {
     if (m_window->isVisible())
         return;
 
@@ -66,21 +75,18 @@ void DockController::showDock()
     });
 }
 
-void DockController::hideDock()
-{
+void DockController::hideDock() {
     m_window->hide();
 }
 
-void DockController::requestQuit()
-{
+void DockController::requestQuit() {
     m_allowClose = true;
     m_window->close();
     QCoreApplication::quit();
 }
 
-void DockController::moveToBottomRight(int margin)
-{
-    auto* screen = QGuiApplication::screenAt(QCursor::pos());
+void DockController::moveToBottomRight(int margin) {
+    auto *screen = QGuiApplication::screenAt(QCursor::pos());
     if (!screen)
         screen = QGuiApplication::primaryScreen();
     if (!screen)
@@ -89,17 +95,16 @@ void DockController::moveToBottomRight(int margin)
     const QRect avail = screen->availableGeometry();
 
     m_window->move(
-        avail.right()  - m_window->width()  - margin,
+        avail.right() - m_window->width() - margin,
         avail.bottom() - m_window->height() - margin
     );
 
     m_dockPosSet = true;
 }
 
-bool DockController::eventFilter(QObject* obj, QEvent* ev)
-{
+bool DockController::eventFilter(QObject *obj, QEvent *ev) {
     if (obj == m_window && ev->type() == QEvent::Close) {
-        auto* ce = static_cast<QCloseEvent*>(ev);
+        auto *ce = static_cast<QCloseEvent *>(ev);
 
         if (!m_allowClose) {
             ce->ignore();

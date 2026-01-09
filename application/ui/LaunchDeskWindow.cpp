@@ -8,6 +8,7 @@
 #include <QPlainTextEdit>
 #include <QStyle>
 #include <QDockWidget>
+#include <QVBoxLayout>
 
 #include "application/controllers/DockController.h"
 
@@ -15,7 +16,7 @@ LaunchDeskWindow::LaunchDeskWindow(QWidget *parent)
     : QMainWindow(parent) {
     setFixedSize(300, 600);
     createMenuBar();
-    createConsole();
+    createConsoleOverlay();
     createTray();
 }
 
@@ -26,17 +27,25 @@ void LaunchDeskWindow::createMenuBar() {
     createView();
 }
 
-void LaunchDeskWindow::createConsole() {
-    m_logView = new QPlainTextEdit();
+void LaunchDeskWindow::createConsoleOverlay()
+{
+    m_consoleOverlay = new QWidget(this);
+    m_consoleOverlay->setObjectName("ConsoleOverlay");
+    m_consoleOverlay->setAttribute(Qt::WA_StyledBackground, true);
+    m_consoleOverlay->setAutoFillBackground(false);
+    m_consoleOverlay->hide();
+
+    m_logView = new QPlainTextEdit(m_consoleOverlay);
     m_logView->setReadOnly(true);
     m_logView->setMaximumBlockCount(5000);
+    m_logView->setFrameStyle(QFrame::NoFrame);
 
-    m_consoleDock = new QDockWidget("Console", this);
-    m_consoleDock->setWidget(m_logView);
-    m_consoleDock->setAllowedAreas(Qt::BottomDockWidgetArea);
-    m_consoleDock->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
+    auto* layout = new QVBoxLayout(m_consoleOverlay);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    layout->addWidget(m_logView);
 
-    addDockWidget(Qt::BottomDockWidgetArea, m_consoleDock);
+    m_consoleOverlay->resize(width(), 300);
 }
 
 void LaunchDeskWindow::createFile() {

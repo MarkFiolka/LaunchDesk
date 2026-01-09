@@ -12,7 +12,8 @@ class LaunchDeskWindow : public QMainWindow {
 
 public:
     explicit LaunchDeskWindow(QWidget *parent = nullptr);
-    QDockWidget* consoleDock() const { return m_consoleDock; }
+
+    QWidget* consoleOverlay() const { return m_consoleOverlay; }
 
 signals:
     void newProfileRequested();
@@ -48,9 +49,9 @@ private:
     QMenu *m_menuView = nullptr;
     QAction *m_console = nullptr;
 
-    void createConsole();
-    QPlainTextEdit *m_logView = nullptr;
-    QDockWidget *m_consoleDock = nullptr;
+    void createConsoleOverlay();
+    QWidget* m_consoleOverlay = nullptr;
+    QPlainTextEdit* m_logView = nullptr;
 
     void createTray();
     void updateTrayText();
