@@ -1,5 +1,6 @@
 #include "LaunchDeskWindow.h"
 
+#include <qabstractitemview.h>
 #include <QMenuBar>
 #include <QMenu>
 #include <QAction>
@@ -9,6 +10,10 @@
 #include <QStyle>
 #include <QDockWidget>
 #include <QVBoxLayout>
+#include <QStackedWidget>
+#include <QListWidget>
+#include <QComboBox>
+#include <QLabel>
 
 #include "application/controllers/debug.h"
 
@@ -16,6 +21,7 @@ LaunchDeskWindow::LaunchDeskWindow(QWidget *parent)
     : QMainWindow(parent) {
     setFixedSize(300, 600);
     createMenuBar();
+    createCentralUI();
     createConsoleOverlay();
     createTray();
 }
@@ -25,27 +31,6 @@ void LaunchDeskWindow::createMenuBar() {
 
     createFile();
     createView();
-}
-
-void LaunchDeskWindow::createConsoleOverlay()
-{
-    m_consoleOverlay = new QWidget(this);
-    m_consoleOverlay->setObjectName("ConsoleOverlay");
-    m_consoleOverlay->setAttribute(Qt::WA_StyledBackground, true);
-    m_consoleOverlay->setAutoFillBackground(false);
-    m_consoleOverlay->hide();
-
-    m_logView = new QPlainTextEdit(m_consoleOverlay);
-    m_logView->setReadOnly(true);
-    m_logView->setMaximumBlockCount(5000);
-    m_logView->setFrameStyle(QFrame::NoFrame);
-
-    auto* layout = new QVBoxLayout(m_consoleOverlay);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-    layout->addWidget(m_logView);
-
-    m_consoleOverlay->resize(width(), 300);
 }
 
 void LaunchDeskWindow::createFile() {
@@ -84,7 +69,7 @@ void LaunchDeskWindow::createFile() {
     connect(m_reload, &QAction::triggered, this, &LaunchDeskWindow::reloadRequested);
     connect(m_save, &QAction::triggered, this, &LaunchDeskWindow::saveRequested);
     connect(m_menuHide, &QAction::triggered, this, &LaunchDeskWindow::hideRequested);
-    connect(m_menuExit, &QAction::triggered, this, &LaunchDeskWindow::exitRequested); //implemented
+    connect(m_menuExit, &QAction::triggered, this, &LaunchDeskWindow::exitRequested);
 }
 
 void LaunchDeskWindow::createView()
@@ -97,6 +82,76 @@ void LaunchDeskWindow::createView()
 
     connect(m_console, &QAction::triggered,
             this, &LaunchDeskWindow::toggleConsoleRequested);
+}
+
+void LaunchDeskWindow::createCentralUI()
+{
+    m_centralWidget = new QWidget(this);
+    setCentralWidget(m_centralWidget);
+
+    m_centralLayout = new QVBoxLayout(m_centralWidget);
+    m_centralLayout->setContentsMargins(6, 6, 6, 6);
+    m_centralLayout->setSpacing(6);
+
+    m_profileSelect = new QComboBox(m_centralWidget);
+    m_profileSelect->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+    m_profileStack = new QStackedWidget(m_centralWidget);
+
+    m_profileSelect->addItem(tr("No Profile"));
+
+    auto* stateView = new QWidget(m_profileStack);
+    auto* stateLayout = new QVBoxLayout(stateView);
+    stateLayout->addStretch();
+
+    auto* title = new QLabel(tr("No profiles available"), stateView);
+    title->setAlignment(Qt::AlignCenter);
+
+    auto* hint = new QLabel(
+        tr("Create your first profile to get started."),
+        stateView
+    );
+    hint->setAlignment(Qt::AlignCenter);
+    hint->setWordWrap(true);
+
+    stateLayout->addWidget(title);
+    stateLayout->addWidget(hint);
+    stateLayout->addStretch();
+
+    m_profileStack->addWidget(stateView); // index 0
+    m_profileStack->setCurrentIndex(0);
+
+    connect(
+        m_profileSelect,
+        QOverload<int>::of(&QComboBox::currentIndexChanged),
+        m_profileStack,
+        &QStackedWidget::setCurrentIndex
+    );
+
+    m_centralLayout->addWidget(m_profileSelect);
+    m_centralLayout->addWidget(m_profileStack, 1);
+}
+
+
+void LaunchDeskWindow::createConsoleOverlay()
+{
+    m_consoleOverlay = new QWidget(this);
+    m_consoleOverlay->setObjectName("ConsoleOverlay");
+    m_consoleOverlay->setAttribute(Qt::WA_StyledBackground, true);
+    m_consoleOverlay->setAutoFillBackground(false);
+    m_consoleOverlay->hide();
+
+    m_logView = new QPlainTextEdit(m_consoleOverlay);
+    m_logView->setReadOnly(true);
+    m_logView->setMaximumBlockCount(5000);
+    m_logView->setFrameStyle(QFrame::NoFrame);
+
+    auto* layout = new QVBoxLayout(m_consoleOverlay);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    layout->addWidget(m_logView);
+
+    m_consoleOverlay->resize(width(), 300);
 }
 
 void LaunchDeskWindow::createTray()

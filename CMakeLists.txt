@@ -28,6 +28,11 @@ qt_add_executable(LaunchDesk
         application/controllers/DebugAppConsole.h
         application/controllers/debug.cpp
         application/controllers/debug.h
+        application/controllers/ProfileController.cpp
+        application/controllers/ProfileController.h
+        application/controllers/ProfilePage.cpp
+        application/controllers/ProfilePage.h
+        application/controllers/ProfileData.h
 )
 
 target_include_directories(LaunchDesk PRIVATE

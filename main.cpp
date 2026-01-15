@@ -7,6 +7,7 @@
 #include "application/platform/WinHotkeyFilter.h"
 #include "application/controllers/WindowsConsole.h"
 #include "application/controllers/DebugAppConsole.h"
+#include "application/controllers/ProfileController.h"
 
 static void applyQss(QApplication &app, const QString &path) {
     QFile f(path);
@@ -35,19 +36,53 @@ int main(int argc, char *argv[]) {
     applyQss(app, ":/styles/QMenuBar.qss");
 
     LaunchDeskWindow window;
+
     DockController dock(&window);
-    DebugAppConsole debug(window.consoleOverlay(), window.logView());
+
+    DebugAppConsole debug(
+        window.consoleOverlay(),
+        window.logView()
+    );
     DebugAppConsole::setInstance(&debug);
+
+    ProfileController profiles(
+    window.profileSelect(),
+    window.profileStack()
+);
+
+    profiles.loadProfiles();
+
     WinHotkeyFilter hotkey;
     app.installNativeEventFilter(&hotkey);
     hotkey.registerHotkey();
 
-    QObject::connect(&hotkey, &WinHotkeyFilter::activated, &dock, &DockController::toggleDock);
+    QObject::connect(&hotkey,
+                     &WinHotkeyFilter::activated,
+                     &dock,
+                     &DockController::toggleDock);
 
-    QObject::connect(&window, &LaunchDeskWindow::hideRequested, &dock, &DockController::hideDock);
-    QObject::connect(&window, &LaunchDeskWindow::showRequested, &dock, &DockController::showDock);
-    QObject::connect(&window, &LaunchDeskWindow::toggleConsoleRequested, &debug, &DebugAppConsole::toggle);
-    QObject::connect(&window, &LaunchDeskWindow::exitRequested, &dock, &DockController::requestQuit);
+    QObject::connect(&window,
+                     &LaunchDeskWindow::newProfileRequested,
+                     &profiles,
+                     [&profiles]() {
+                         static int i = 1;
+                         profiles.addProfile(QString("Profile %1").arg(i++));
+                     });
+
+    QObject::connect(&window,
+                     &LaunchDeskWindow::hideRequested,
+                     &dock,
+                     &DockController::hideDock);
+
+    QObject::connect(&window,
+                     &LaunchDeskWindow::toggleConsoleRequested,
+                     &debug,
+                     &DebugAppConsole::toggle);
+
+    QObject::connect(&window,
+                     &LaunchDeskWindow::exitRequested,
+                     &dock,
+                     &DockController::requestQuit);
 
     window.hide();
     const int rc = app.exec();
