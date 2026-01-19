@@ -1,28 +1,22 @@
 #include "ProfileController.h"
 #include "ProfilePage.h"
 
-#include <QComboBox>
-#include <QDir>
-#include <QStackedWidget>
-#include <QFile>
-#include <QFileInfo>
-#include <QJsonArray>
+#include <QList>
+#include <QObject>
 #include <QJsonDocument>
-#include <QJsonObject>
+#include <QJsonArray>
+#include <QFile>
 #include <QDebug>
-#include <QStandardPaths>
 
 ProfileController::ProfileController(QComboBox *combo,
                                      QStackedWidget *stack,
                                      QObject *parent)
     : QObject(parent)
-    , m_combo(combo)
-    , m_stack(stack)
-{
+      , m_combo(combo)
+      , m_stack(stack) {
 }
 
-void ProfileController::addProfile(const QString &name)
-{
+void ProfileController::addProfile(const QString &name) {
     if (m_combo->count() == 1 && m_combo->itemText(0) == "No Profile") {
         QWidget *stateView = m_stack->widget(0);
         m_combo->removeItem(0);
@@ -34,10 +28,10 @@ void ProfileController::addProfile(const QString &name)
     profile.name = name;
 
     const QString baseDir =
-    QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+            QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
     profile.filePath =
-        baseDir + "/profiles/" + name.toLower() + ".json";
+            baseDir + "/profiles/" + name.toLower() + ".json";
 
 
     m_profiles.append(profile);
@@ -48,18 +42,12 @@ void ProfileController::addProfile(const QString &name)
     m_combo->setCurrentIndex(m_combo->count() - 1);
 
     saveProfile(m_profiles.last());
-
-    // addActionToCurrentProfile(
-    //     "Overwatch",
-    //     "C:/Windows/HelpPane.exe"
-    // );
 }
 
 void ProfileController::addActionToCurrentProfile(
     const QString &name,
     const QString &path
-)
-{
+) {
     int index = currentProfileIndex();
     if (index < 0)
         return;
@@ -70,25 +58,22 @@ void ProfileController::addActionToCurrentProfile(
 
     auto &profile = m_profiles[index];
 
-    profile.actions.append({ name, path });
+    profile.actions.append({name, path});
 
     page->addAction(name, path);
 
     saveProfile(profile);
 }
 
-ProfilePage *ProfileController::currentProfilePage() const
-{
+ProfilePage *ProfileController::currentProfilePage() const {
     return qobject_cast<ProfilePage *>(m_stack->currentWidget());
 }
 
-int ProfileController::currentProfileIndex() const
-{
+int ProfileController::currentProfileIndex() const {
     return m_combo->currentIndex();
 }
 
-void ProfileController::loadProfiles()
-{
+void ProfileController::loadProfiles() {
     QDir dir("profiles");
 
     if (!dir.exists())
@@ -103,13 +88,13 @@ void ProfileController::loadProfiles()
         return;
 
     if (m_combo->count() == 1 && m_combo->itemText(0) == "No Profile") {
-        QWidget* stateView = m_stack->widget(0);
+        QWidget *stateView = m_stack->widget(0);
         m_combo->removeItem(0);
         m_stack->removeWidget(stateView);
         stateView->deleteLater();
     }
 
-    for (const QString& fileName : files) {
+    for (const QString &fileName: files) {
         const QString filePath = dir.filePath(fileName);
 
         QFile file(filePath);
@@ -127,7 +112,7 @@ void ProfileController::loadProfiles()
         profile.filePath = filePath;
 
         const QJsonArray actions = root["actions"].toArray();
-        for (const QJsonValue& v : actions) {
+        for (const QJsonValue &v: actions) {
             const QJsonObject obj = v.toObject();
             profile.actions.append({
                 obj["name"].toString(),
@@ -137,8 +122,8 @@ void ProfileController::loadProfiles()
 
         m_profiles.append(profile);
 
-        auto* page = new ProfilePage(m_stack);
-        for (const auto& action : profile.actions) {
+        auto *page = new ProfilePage(m_stack);
+        for (const auto &action: profile.actions) {
             page->addAction(action.name, action.path);
         }
 
@@ -152,8 +137,7 @@ void ProfileController::loadProfiles()
 }
 
 
-void ProfileController::saveProfile(const ProfileData& profile)
-{
+void ProfileController::saveProfile(const ProfileData &profile) {
     const QString dirPath = QFileInfo(profile.filePath).absolutePath();
     QDir().mkpath(dirPath);
 
@@ -161,7 +145,7 @@ void ProfileController::saveProfile(const ProfileData& profile)
     root["name"] = profile.name;
 
     QJsonArray actions;
-    for (const auto& a : profile.actions) {
+    for (const auto &a: profile.actions) {
         QJsonObject obj;
         obj["name"] = a.name;
         obj["path"] = a.path;
@@ -180,5 +164,5 @@ void ProfileController::saveProfile(const ProfileData& profile)
     );
 
     qDebug() << "Profile saved to:"
-             << QFileInfo(profile.filePath).absoluteFilePath();
+            << QFileInfo(profile.filePath).absoluteFilePath();
 }

@@ -1,5 +1,10 @@
 #pragma once
+
+#include <QCloseEvent>
+#include <QTimer>
 #include <QObject>
+#include <QCoreApplication>
+#include <QWidget>
 
 class QWidget;
 

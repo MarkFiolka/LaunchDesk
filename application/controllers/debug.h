@@ -1,4 +1,5 @@
 #pragma once
+
 #include <QString>
 
 void dlog(const QString &msg);

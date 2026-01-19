@@ -2,6 +2,8 @@
 #include <QFile>
 #include <QDebug>
 
+#include "NewActionWindowDialog.h"
+#include "NewProfileWindowDialog.h"
 #include "application/ui/LaunchDeskWindow.h"
 #include "application/controllers/DockController.h"
 #include "application/platform/WinHotkeyFilter.h"
@@ -46,9 +48,9 @@ int main(int argc, char *argv[]) {
     DebugAppConsole::setInstance(&debug);
 
     ProfileController profiles(
-    window.profileSelect(),
-    window.profileStack()
-);
+        window.profileSelect(),
+        window.profileStack()
+    );
 
     profiles.loadProfiles();
 
@@ -56,23 +58,29 @@ int main(int argc, char *argv[]) {
     app.installNativeEventFilter(&hotkey);
     hotkey.registerHotkey();
 
-    QObject::connect(&hotkey,
-                     &WinHotkeyFilter::activated,
-                     &dock,
-                     &DockController::toggleDock);
+    QObject::connect(&hotkey, &WinHotkeyFilter::activated, &dock, &DockController::toggleDock);
 
-    QObject::connect(&window,
-                     &LaunchDeskWindow::newProfileRequested,
-                     &profiles,
-                     [&profiles]() {
-                         static int i = 1;
-                         profiles.addProfile(QString("Profile %1").arg(i++));
-                     });
+    QObject::connect(&window, &LaunchDeskWindow::newProfileRequested, &window, [&profiles, &window]() {
+        NewProfileWindowDialog dialog(&window);
+        if (dialog.exec() == QDialog::Accepted) {
+            const QString name = dialog.profileName();
+            if (!name.isEmpty()) {
+                profiles.addProfile(name);
+            }
+        }
+    });
 
-    QObject::connect(&window,
-                     &LaunchDeskWindow::hideRequested,
-                     &dock,
-                     &DockController::hideDock);
+    QObject::connect(&window, &LaunchDeskWindow::newActionRequested, &window, [&profiles, &window]() {
+        NewActionWindowDialog dialog(&window);
+        if (dialog.exec() == QDialog::Accepted) {
+            const QString name = dialog.actionName();
+            if (!name.isEmpty()) {
+                profiles.addActionToCurrentProfile(name, dialog.actionPath());
+            }
+        }
+    });
+
+    QObject::connect(&window, &LaunchDeskWindow::hideRequested, &dock, &DockController::hideDock);
 
     QObject::connect(&window,
                      &LaunchDeskWindow::toggleConsoleRequested,

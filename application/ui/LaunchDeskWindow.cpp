@@ -1,22 +1,5 @@
 #include "LaunchDeskWindow.h"
 
-#include <qabstractitemview.h>
-#include <QMenuBar>
-#include <QMenu>
-#include <QAction>
-#include <QSystemTrayIcon>
-#include <QApplication>
-#include <QPlainTextEdit>
-#include <QStyle>
-#include <QDockWidget>
-#include <QVBoxLayout>
-#include <QStackedWidget>
-#include <QListWidget>
-#include <QComboBox>
-#include <QLabel>
-
-#include "application/controllers/debug.h"
-
 LaunchDeskWindow::LaunchDeskWindow(QWidget *parent)
     : QMainWindow(parent) {
     setFixedSize(300, 600);

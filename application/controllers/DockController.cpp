@@ -1,14 +1,9 @@
 #include "DockController.h"
-
-#include <QCloseEvent>
-#include <QTimer>
-#include <QCursor>
-#include <QGuiApplication>
-#include <QScreen>
-#include <QCoreApplication>
-#include <QWidget>
-
 #include "debug.h"
+
+#include <QCursor>
+#include <QScreen>
+#include <QGuiApplication>
 
 DockController::DockController(QWidget *window, QObject *parent)
     : QObject(parent)

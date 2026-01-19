@@ -33,6 +33,10 @@ qt_add_executable(LaunchDesk
         application/controllers/ProfilePage.cpp
         application/controllers/ProfilePage.h
         application/controllers/ProfileData.h
+        application/ui/NewProfileWindowDialog.cpp
+        application/ui/NewProfileWindowDialog.h
+        application/ui/NewActionWindowDialog.cpp
+        application/ui/NewActionWindowDialog.h
 )
 
 target_include_directories(LaunchDesk PRIVATE

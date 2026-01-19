@@ -1,5 +1,7 @@
 #pragma once
-#include <QWidget>
+
+#include <QTableWidget>
+#include <QFileInfo>
 
 class QTableWidget;
 

@@ -1,6 +1,7 @@
 #pragma once
-#include <QString>
+
 #include <QList>
+#include <QString>
 
 struct ActionData {
     QString name;

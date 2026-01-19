@@ -1,11 +1,7 @@
 #include "DebugAppConsole.h"
 
-#include <QPlainTextEdit>
-#include <QClipboard>
 #include <QApplication>
-#include <QDateTime>
 #include <QEvent>
-#include <QWidget>
 
 DebugAppConsole* DebugAppConsole::s_instance = nullptr;
 

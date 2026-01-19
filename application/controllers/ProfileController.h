@@ -1,8 +1,13 @@
 #pragma once
-#include <QObject>
-#include <QList>
 
 #include "ProfileData.h"
+
+#include <QComboBox>
+#include <QDir>
+#include <QStackedWidget>
+#include <QFileInfo>
+#include <QJsonObject>
+#include <QStandardPaths>
 
 class QComboBox;
 class QStackedWidget;

@@ -1,6 +1,11 @@
 #pragma once
+
 #include <QObject>
 #include <QString>
+#include <QPlainTextEdit>
+#include <QClipboard>
+#include <QDateTime>
+#include <QWidget>
 
 class QWidget;
 class QPlainTextEdit;

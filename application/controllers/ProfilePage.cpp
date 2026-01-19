@@ -1,13 +1,12 @@
 #include "ProfilePage.h"
 
-#include <QTableWidget>
 #include <QHeaderView>
 #include <QVBoxLayout>
 #include <QApplication>
 #include <QStyle>
 #include <QTableWidgetItem>
-#include <QFileInfo>
 #include <QFileIconProvider>
+#include <QWidget>
 
 ProfilePage::ProfilePage(QWidget* parent)
     : QWidget(parent)

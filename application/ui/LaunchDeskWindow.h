@@ -1,6 +1,23 @@
 #pragma once
+
 #include <QMainWindow>
 #include <QVBoxLayout>
+#include <qabstractitemview.h>
+#include <QMenuBar>
+#include <QMenu>
+#include <QAction>
+#include <QSystemTrayIcon>
+#include <QApplication>
+#include <QPlainTextEdit>
+#include <QStyle>
+#include <QDockWidget>
+#include <QVBoxLayout>
+#include <QStackedWidget>
+#include <QListWidget>
+#include <QComboBox>
+#include <QLabel>
+
+#include "application/controllers/debug.h"
 
 class QMenuBar;
 class QMenu;
