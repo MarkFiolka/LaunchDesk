@@ -1,9 +1,9 @@
 #pragma once
 
-#include <QApplication>
+#include <QMainWindow>
 #include <QDialog>
-#include <QDialogButtonBox>
-#include <QLineEdit>
+
+class QLineEdit;
 
 class NewActionWindowDialog : public QDialog {
     Q_OBJECT
@@ -13,6 +13,6 @@ public:
     QString actionPath() const;
 
 private:
-    QLineEdit* m_nameEdit;
-    QLineEdit* m_pathEdit;
+    QLineEdit* m_nameEdit = nullptr;
+    QLineEdit* m_pathEdit = nullptr;
 };

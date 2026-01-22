@@ -1,9 +1,9 @@
 #pragma once
 
-#include <QApplication>
+#include <QMainWindow>
 #include <QDialog>
-#include <QDialogButtonBox>
-#include <QLineEdit>
+
+class QLineEdit;
 
 class NewProfileWindowDialog : public QDialog {
     Q_OBJECT
@@ -12,5 +12,5 @@ public:
     QString profileName() const;
 
 private:
-    QLineEdit* m_nameEdit;
+    QLineEdit* m_nameEdit = nullptr;
 };

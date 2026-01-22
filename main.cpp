@@ -41,16 +41,10 @@ int main(int argc, char *argv[]) {
 
     DockController dock(&window);
 
-    DebugAppConsole debug(
-        window.consoleOverlay(),
-        window.logView()
-    );
+    DebugAppConsole debug(window.consoleOverlay(), window.logView());
     DebugAppConsole::setInstance(&debug);
 
-    ProfileController profiles(
-        window.profileSelect(),
-        window.profileStack()
-    );
+    ProfileController profiles(window.profileSelect(), window.profileStack());
 
     profiles.loadProfiles();
 
@@ -59,7 +53,6 @@ int main(int argc, char *argv[]) {
     hotkey.registerHotkey();
 
     QObject::connect(&hotkey, &WinHotkeyFilter::activated, &dock, &DockController::toggleDock);
-
     QObject::connect(&window, &LaunchDeskWindow::newProfileRequested, &window, [&profiles, &window]() {
         NewProfileWindowDialog dialog(&window);
         if (dialog.exec() == QDialog::Accepted) {
@@ -69,7 +62,6 @@ int main(int argc, char *argv[]) {
             }
         }
     });
-
     QObject::connect(&window, &LaunchDeskWindow::newActionRequested, &window, [&profiles, &window]() {
         NewActionWindowDialog dialog(&window);
         if (dialog.exec() == QDialog::Accepted) {
@@ -79,18 +71,9 @@ int main(int argc, char *argv[]) {
             }
         }
     });
-
     QObject::connect(&window, &LaunchDeskWindow::hideRequested, &dock, &DockController::hideDock);
-
-    QObject::connect(&window,
-                     &LaunchDeskWindow::toggleConsoleRequested,
-                     &debug,
-                     &DebugAppConsole::toggle);
-
-    QObject::connect(&window,
-                     &LaunchDeskWindow::exitRequested,
-                     &dock,
-                     &DockController::requestQuit);
+    QObject::connect(&window, &LaunchDeskWindow::toggleConsoleRequested, &debug, &DebugAppConsole::toggle);
+    QObject::connect(&window, &LaunchDeskWindow::exitRequested, &dock, &DockController::requestQuit);
 
     window.hide();
     const int rc = app.exec();

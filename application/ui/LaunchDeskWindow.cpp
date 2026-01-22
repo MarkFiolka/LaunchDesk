@@ -1,5 +1,15 @@
 #include "LaunchDeskWindow.h"
 
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QWidget>
+#include <QMenuBar>
+#include <QApplication>
+#include <QComboBox>
+#include <QStackedWidget>
+#include <QPlainTextEdit>
+#include <QSystemTrayIcon>
+
 LaunchDeskWindow::LaunchDeskWindow(QWidget *parent)
     : QMainWindow(parent) {
     setFixedSize(300, 600);
@@ -19,81 +29,84 @@ void LaunchDeskWindow::createMenuBar() {
 void LaunchDeskWindow::createFile() {
     m_menuFile = m_menuBar->addMenu(tr("&File"));
 
-    m_newProfile = m_menuFile->addAction(
+    QAction *newProfile = m_menuFile->addAction(
         QApplication::style()->standardIcon(QStyle::SP_FileDialogNewFolder),
         tr("New Profile"));
 
-    m_newAction = m_menuFile->addAction(
+    QAction *newAction = m_menuFile->addAction(
         QApplication::style()->standardIcon(QStyle::SP_FileIcon),
         tr("New Action"));
 
     m_menuFile->addSeparator();
 
-    m_reload = m_menuFile->addAction(
+    QAction *reload = m_menuFile->addAction(
         QApplication::style()->standardIcon(QStyle::SP_BrowserReload),
         tr("Reload"));
 
-    m_save = m_menuFile->addAction(
+    QAction *save = m_menuFile->addAction(
         QApplication::style()->standardIcon(QStyle::SP_DialogSaveButton),
         tr("Save"));
 
     m_menuFile->addSeparator();
 
-    m_menuHide = m_menuFile->addAction(
+    QAction *menuHide = m_menuFile->addAction(
         QApplication::style()->standardIcon(QStyle::SP_DialogCloseButton),
         tr("Hide"));
 
-    m_menuExit = m_menuFile->addAction(
+    QAction *menuExit = m_menuFile->addAction(
         QApplication::style()->standardIcon(QStyle::SP_MediaStop),
         tr("Exit"));
 
-    connect(m_newProfile, &QAction::triggered, this, &LaunchDeskWindow::newProfileRequested);
-    connect(m_newAction, &QAction::triggered, this, &LaunchDeskWindow::newActionRequested);
-    connect(m_reload, &QAction::triggered, this, &LaunchDeskWindow::reloadRequested);
-    connect(m_save, &QAction::triggered, this, &LaunchDeskWindow::saveRequested);
-    connect(m_menuHide, &QAction::triggered, this, &LaunchDeskWindow::hideRequested);
-    connect(m_menuExit, &QAction::triggered, this, &LaunchDeskWindow::exitRequested);
+    connect(newProfile, &QAction::triggered, this, &LaunchDeskWindow::newProfileRequested);
+    connect(newAction, &QAction::triggered, this, &LaunchDeskWindow::newActionRequested);
+    connect(reload, &QAction::triggered, this, &LaunchDeskWindow::reloadRequested);
+    connect(save, &QAction::triggered, this, &LaunchDeskWindow::saveRequested);
+    connect(menuHide, &QAction::triggered, this, &LaunchDeskWindow::hideRequested);
+    connect(menuExit, &QAction::triggered, this, &LaunchDeskWindow::exitRequested);
 }
 
-void LaunchDeskWindow::createView()
-{
+void LaunchDeskWindow::createView() {
     m_menuView = m_menuBar->addMenu(tr("&View"));
 
-    m_console = m_menuView->addAction(
+    QAction *console = m_menuView->addAction(
         QApplication::style()->standardIcon(QStyle::SP_CommandLink),
         tr("Toggle Console"));
 
-    connect(m_console, &QAction::triggered,
-            this, &LaunchDeskWindow::toggleConsoleRequested);
+    connect(console, &QAction::triggered, this, &LaunchDeskWindow::toggleConsoleRequested);
 }
 
-void LaunchDeskWindow::createCentralUI()
-{
-    m_centralWidget = new QWidget(this);
-    setCentralWidget(m_centralWidget);
+void LaunchDeskWindow::createCentralUI() {
+    QWidget *centralWidget = new QWidget(this);
+    setCentralWidget(centralWidget);
 
-    m_centralLayout = new QVBoxLayout(m_centralWidget);
-    m_centralLayout->setContentsMargins(6, 6, 6, 6);
-    m_centralLayout->setSpacing(6);
+    QVBoxLayout *centralLayout = new QVBoxLayout(centralWidget);
+    centralLayout->setContentsMargins(6, 6, 6, 6);
+    centralLayout->setSpacing(6);
 
-    m_profileSelect = new QComboBox(m_centralWidget);
-    m_profileSelect->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    m_profileSelect = new QComboBox(centralWidget);
 
-    m_profileStack = new QStackedWidget(m_centralWidget);
+    m_profileSelect->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed
+    );
 
-    m_profileSelect->addItem(tr("No Profile"));
+    m_profileStack = new QStackedWidget(centralWidget);
 
-    auto* stateView = new QWidget(m_profileStack);
-    auto* stateLayout = new QVBoxLayout(stateView);
+    m_profileSelect->addItem( tr("No Profile"));
+
+    QWidget *stateView = new QWidget(m_profileStack);
+    QVBoxLayout *stateLayout = new QVBoxLayout(stateView);
     stateLayout->addStretch();
 
-    auto* title = new QLabel(tr("No profiles available"), stateView);
+    QLabel *title = new QLabel(
+        tr("No profiles available"),
+        stateView);
+
     title->setAlignment(Qt::AlignCenter);
 
-    auto* hint = new QLabel(
+    QLabel *hint = new QLabel(
         tr("Create your first profile to get started."),
         stateView
     );
+
     hint->setAlignment(Qt::AlignCenter);
     hint->setWordWrap(true);
 
@@ -104,20 +117,15 @@ void LaunchDeskWindow::createCentralUI()
     m_profileStack->addWidget(stateView); // index 0
     m_profileStack->setCurrentIndex(0);
 
-    connect(
-        m_profileSelect,
-        QOverload<int>::of(&QComboBox::currentIndexChanged),
-        m_profileStack,
-        &QStackedWidget::setCurrentIndex
-    );
+    connect(m_profileSelect, QOverload<int>::of(&QComboBox::currentIndexChanged), m_profileStack,
+            &QStackedWidget::setCurrentIndex);
 
-    m_centralLayout->addWidget(m_profileSelect);
-    m_centralLayout->addWidget(m_profileStack, 1);
+    centralLayout->addWidget(m_profileSelect);
+    centralLayout->addWidget(m_profileStack, 1);
 }
 
 
-void LaunchDeskWindow::createConsoleOverlay()
-{
+void LaunchDeskWindow::createConsoleOverlay() {
     m_consoleOverlay = new QWidget(this);
     m_consoleOverlay->setObjectName("ConsoleOverlay");
     m_consoleOverlay->setAttribute(Qt::WA_StyledBackground, true);
@@ -129,7 +137,7 @@ void LaunchDeskWindow::createConsoleOverlay()
     m_logView->setMaximumBlockCount(5000);
     m_logView->setFrameStyle(QFrame::NoFrame);
 
-    auto* layout = new QVBoxLayout(m_consoleOverlay);
+    QVBoxLayout* layout = new QVBoxLayout(m_consoleOverlay);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(m_logView);
@@ -137,36 +145,31 @@ void LaunchDeskWindow::createConsoleOverlay()
     m_consoleOverlay->resize(width(), 300);
 }
 
-void LaunchDeskWindow::createTray()
-{
-    m_tray = new QSystemTrayIcon(this);
-    m_tray->setIcon(QApplication::style()->standardIcon(QStyle::SP_ComputerIcon));
+void LaunchDeskWindow::createTray() {
+    QSystemTrayIcon* tray = new QSystemTrayIcon(this);
+    tray->setIcon(QApplication::style()->standardIcon(QStyle::SP_ComputerIcon));
 
-    m_menuTray = new QMenu(this);
+    QMenu* menuTray = new QMenu(this);
 
-    m_toggleTray = m_menuTray->addAction(tr("Show"));
-    m_trayExit   = m_menuTray->addAction(tr("Exit"));
+    QAction* toggleTray = menuTray->addAction(tr("Show"));
+    QAction* trayExit = menuTray->addAction(tr("Exit"));
 
-    connect(m_toggleTray, &QAction::triggered,
-            this, &LaunchDeskWindow::toggleConsoleRequested);
+    connect(toggleTray, &QAction::triggered, this, &LaunchDeskWindow::toggleConsoleRequested);
 
-    connect(m_trayExit, &QAction::triggered,
-            this, &LaunchDeskWindow::exitRequested);
+    connect(trayExit, &QAction::triggered, this, &LaunchDeskWindow::exitRequested);
 
-    connect(m_tray, &QSystemTrayIcon::activated,
-            this, [this](QSystemTrayIcon::ActivationReason reason) {
-        if (reason == QSystemTrayIcon::Trigger)
-            emit toggleConsoleRequested();
-    });
+    connect(tray, &QSystemTrayIcon::activated, this, [this](QSystemTrayIcon::ActivationReason reason) {
+                if (reason == QSystemTrayIcon::Trigger)
+                    emit toggleConsoleRequested();
+            });
 
-    m_tray->setContextMenu(m_menuTray);
-    m_tray->show();
+    tray->setContextMenu(m_menuTray);
+    tray->show();
 
     updateTrayText();
 }
 
-void LaunchDeskWindow::updateTrayText()
-{
+void LaunchDeskWindow::updateTrayText() {
     if (!m_toggleTray)
         return;
 
@@ -176,6 +179,3 @@ void LaunchDeskWindow::updateTrayText()
         m_toggleTray->setText(tr("Show"));
     }
 }
-
-
-
