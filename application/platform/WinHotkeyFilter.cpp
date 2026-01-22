@@ -9,6 +9,8 @@ WinHotkeyFilter::WinHotkeyFilter(QObject* parent)
 {
 }
 
+DWORD operator<<(const QDebug & lhs, char * str);
+
 bool WinHotkeyFilter::registerHotkey()
 {
 #ifdef _WIN32
@@ -20,6 +22,10 @@ bool WinHotkeyFilter::registerHotkey()
                        0x4C /* L */) != 0;
 
     return m_registered;
+
+    if (!m_registered) {
+        qWarning() << "Failed to register Hotkey. Error code:" << GetLastError();
+    }
 #else
     return false;
 #endif

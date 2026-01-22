@@ -6,6 +6,7 @@ class WinHotkeyFilter : public QObject, public QAbstractNativeEventFilter {
     Q_OBJECT
 public:
     explicit WinHotkeyFilter(QObject* parent = nullptr);
+    virtual ~WinHotkeyFilter() override;
 
     bool registerHotkey();
     void unregisterHotkey();
@@ -18,5 +19,6 @@ protected:
 
 private:
     bool m_registered = false;
-    static constexpr int HOTKEY_ID = 0x4C44;
+
+    static constexpr int HOTKEY_ID = 0x4C44; //0x4C44 -> 'LD'
 };
